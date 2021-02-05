@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">CST438-01-WK01HW02SOLO</string>
+    <string name="loginButton">Login</string>
+    <string name="title_activity_landing">LandingActivity</string>
+    <!--
+    This string is used for square devices and overridden by hello_world in
+    values-round/strings.xml for round devices.
+    -->
+    <string name="hello_world">Hello Square World!</string>
+</resources>
