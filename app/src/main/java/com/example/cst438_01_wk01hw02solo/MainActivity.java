@@ -20,7 +20,6 @@ public class MainActivity extends AppCompatActivity {
     private String inputUn;
     private String inputPw;
     private User tUser;
-
     private ArrayList<User> userList = new ArrayList<>();
 
 
@@ -33,6 +32,11 @@ public class MainActivity extends AppCompatActivity {
         userList.add(new User("test3","pass3", 3));
         userList.add(new User("test4","pass4", 4));
         userList.add(new User("test5","pass5", 5));
+        userList.add(new User("test6","pass6", 6));
+        userList.add(new User("test7","pass7", 7));
+        userList.add(new User("test8","pass8", 8));
+        userList.add(new User("test9","pass9", 9));
+        userList.add(new User("test10","pass10", 10));
         wireUpDisplay();
     }
 
@@ -46,23 +50,20 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 getValuesFromDisplay();
                 boolean uFound = false;
-                for(User u : userList){
-                    if(inputUn.equals(u.getUsername())){
-                        tUser = u;
-                        uFound = true;
+                if(verifyUN()){
+                    if(verifyPW()){
+                        Intent intent = LandingActivity.intentFactory(getApplicationContext(),tUser.getuId(),tUser.getUsername());
+                        startActivity(intent);
                     }
-                }
-                if(uFound && tUser.getPassword().equals(inputPw)){
-                    //do login stuff here
-                    Intent intent = LandingActivity.intentFactory(getApplicationContext(),tUser.getuId());
-                    startActivity(intent);
+                    else{
+                        toastMaker("Invalid Credentials");
+                    }
                 }
                 else{
                     toastMaker("Invalid Credentials");
                 }
             }
         });
-
     }
 
     private void getValuesFromDisplay() {
@@ -74,6 +75,23 @@ public class MainActivity extends AppCompatActivity {
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
+    }
+
+    private boolean verifyUN(){
+        for(User u : userList){
+            if(inputUn.equals(u.getUsername())){
+                tUser = u;
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean verifyPW(){
+        if(tUser.getPassword().equals(inputPw)){
+            return true;
+        }
+        return false;
     }
 
 }

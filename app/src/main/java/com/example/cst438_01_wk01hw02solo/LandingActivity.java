@@ -19,15 +19,22 @@ public class LandingActivity extends AppCompatActivity {
 
     public static String ACTIVITY_LABEL = "LANDING_ACTIVITY_COM_EXAMPLE";
     private TextView textViewResult;
+    private TextView textViewWelcomeMSG;
     private int uid;
+    private String un;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
-        textViewResult = (TextView) findViewById(R.id.text_view_result);
+        textViewResult = findViewById(R.id.text_view_result);
+        textViewWelcomeMSG = findViewById(R.id.welcome_msg);
 
-        uid = getIntent().getIntExtra(ACTIVITY_LABEL, -1);
+        Bundle extras = getIntent().getExtras();
+        uid = extras.getInt("EXTRA_UID");
+        un = extras.getString("EXTRA_UN");
+
+        textViewWelcomeMSG.setText("Welcome " + un + ", your user id is " + uid + " and these are your posts.");
 
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://jsonplaceholder.typicode.com/")
@@ -50,8 +57,7 @@ public class LandingActivity extends AppCompatActivity {
                 for (Post p : posts) {
                     if (uid == p.getUserId()) {
                         String content = "";
-                        content += "ID: " + p.getId() + "\n";
-                        content += "User ID: " + p.getUserId() + "\n";
+                        content += "Post ID: " + p.getId() + "\n";
                         content += "Title: " + p.getTitle() + "\n";
                         content += "Body: " + p.getBody() + "\n\n";
                         textViewResult.append(content);
@@ -67,9 +73,13 @@ public class LandingActivity extends AppCompatActivity {
 
     }
 
-    public static Intent intentFactory(Context context, int uid) {
+    //intent switcher
+    public static Intent intentFactory(Context context, int i, String s) {
         Intent intent = new Intent(context, LandingActivity.class);
-        intent.putExtra(LandingActivity.ACTIVITY_LABEL, uid);
+        Bundle extras = new Bundle();
+        extras.putInt("EXTRA_UID", i); //for passing userId
+        extras.putString("EXTRA_UN", s); // for passing username
+        intent.putExtras(extras);
         return intent;
     }
 }
