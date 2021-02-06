@@ -45,18 +45,23 @@ public class MainActivity extends AppCompatActivity {
 
         loginButton.setOnClickListener(v -> { //does user verification on button click
             getValuesFromDisplay();
-            tUser = verifyUN(userList, inputUn);
-            if(tUser != null){
-                if(verifyPW(tUser, inputPw)){ //if both username and password matches, launch landing page
-                    Intent intent = LandingActivity.intentFactory(getApplicationContext(),tUser.getuId(),tUser.getUsername());
-                    startActivity(intent);
-                }
-                else{
-                    toastMaker("Invalid Password"); //display if password doesn't match
-                }
+            if (inputPw  == ""|| inputUn == ""){
+                toastMaker("No empty fields!");
             }
             else{
-                toastMaker("Invalid Credentials"); //display if username not found
+                tUser = verifyUN(userList, inputUn);
+                if(tUser != null){
+                    if(verifyPW(tUser, inputPw)){ //if both username and password matches, launch landing page
+                        Intent intent = LandingActivity.intentFactory(getApplicationContext(),tUser.getuId(),tUser.getUsername());
+                        startActivity(intent);
+                    }
+                    else{
+                        toastMaker("Invalid Password"); //display if password doesn't match
+                    }
+                }
+                else{
+                    toastMaker("Invalid Credentials"); //display if username not found
+                }
             }
         });
     }
