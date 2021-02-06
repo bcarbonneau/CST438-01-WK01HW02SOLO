@@ -1,32 +1,30 @@
 package com.example.cst438_01_wk01hw02solo;
 
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
-
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
     private EditText userBox;
     private EditText passBox;
-    private Button LoginButton;
     private String inputUn;
     private String inputPw;
     private User tUser;
-    private ArrayList<User> userList = new ArrayList<>();
+    private final ArrayList<User> userList = new ArrayList<>();
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        //add some predefined users
         userList.add(new User("test","pass", 1));
         userList.add(new User("test2","pass2", 2));
         userList.add(new User("test3","pass3", 3));
@@ -40,58 +38,51 @@ public class MainActivity extends AppCompatActivity {
         wireUpDisplay();
     }
 
-    private void wireUpDisplay() {
+    private void wireUpDisplay() { //connects code to ui
         userBox = findViewById(R.id.LoginU);
         passBox = findViewById(R.id.LoginP);
-        LoginButton = findViewById(R.id.buttonLoginAct);
+        Button loginButton = findViewById(R.id.buttonLoginAct);
 
-        LoginButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getValuesFromDisplay();
-                boolean uFound = false;
-                if(verifyUN()){
-                    if(verifyPW()){
-                        Intent intent = LandingActivity.intentFactory(getApplicationContext(),tUser.getuId(),tUser.getUsername());
-                        startActivity(intent);
-                    }
-                    else{
-                        toastMaker("Invalid Credentials");
-                    }
+        loginButton.setOnClickListener(v -> { //does user verification on button click
+            getValuesFromDisplay();
+            tUser = verifyUN(userList, inputUn);
+            if(tUser != null){
+                if(verifyPW(tUser, inputPw)){ //if both username and password matches, launch landing page
+                    Intent intent = LandingActivity.intentFactory(getApplicationContext(),tUser.getuId(),tUser.getUsername());
+                    startActivity(intent);
                 }
                 else{
-                    toastMaker("Invalid Credentials");
+                    toastMaker("Invalid Password"); //display if password doesn't match
                 }
+            }
+            else{
+                toastMaker("Invalid Credentials"); //display if username not found
             }
         });
     }
 
-    private void getValuesFromDisplay() {
+    private void getValuesFromDisplay() { //sets variables from user text box input
         inputUn = userBox.getText().toString();
         inputPw = passBox.getText().toString();
     }
 
-    private void toastMaker(String message) {
+    private void toastMaker(String message) { //for message display
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         toast.setGravity(Gravity.CENTER, 0, 0);
         toast.show();
     }
 
-    private boolean verifyUN(){
-        for(User u : userList){
-            if(inputUn.equals(u.getUsername())){
-                tUser = u;
-                return true;
+    static User verifyUN(List<User> list, String input){ //returns user when found, null if not found
+        for(User u : list){
+            if(input.equals(u.getUsername())){
+                return u;
             }
         }
-        return false;
+        return null;
     }
 
-    private boolean verifyPW(){
-        if(tUser.getPassword().equals(inputPw)){
-            return true;
-        }
-        return false;
+    static boolean verifyPW(User u, String input){ //returns true/false if input password matches user password
+        return u.getPassword().equals(input);
     }
 
 }

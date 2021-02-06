@@ -1,5 +1,6 @@
 package com.example.cst438_01_wk01hw02solo;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,23 +20,25 @@ public class LandingActivity extends AppCompatActivity {
 
     public static String ACTIVITY_LABEL = "LANDING_ACTIVITY_COM_EXAMPLE";
     private TextView textViewResult;
-    private TextView textViewWelcomeMSG;
     private int uid;
-    private String un;
 
+    @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_landing);
         textViewResult = findViewById(R.id.text_view_result);
-        textViewWelcomeMSG = findViewById(R.id.welcome_msg);
+        TextView textViewWelcomeMSG = findViewById(R.id.welcome_msg);
 
+        //retrieve username and id from MainActivity
         Bundle extras = getIntent().getExtras();
         uid = extras.getInt("EXTRA_UID");
-        un = extras.getString("EXTRA_UN");
+        String un = extras.getString("EXTRA_UN");
 
+        //display "personalized" welcome msg
         textViewWelcomeMSG.setText("Welcome " + un + ", your user id is " + uid + " and these are your posts.");
 
+        //begin api fetch
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://jsonplaceholder.typicode.com/")
                 .addConverterFactory(GsonConverterFactory.create())
@@ -48,12 +51,12 @@ public class LandingActivity extends AppCompatActivity {
         call.enqueue(new Callback<List<Post>>() {
             @Override
             public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
-                if (!response.isSuccessful()) {
+                if (!response.isSuccessful()) { //if failed response display code in text view
                     textViewResult.setText("Code: " + response.code());
                     return;
                 }
 
-                List<Post> posts = response.body();
+                List<Post> posts = response.body(); //if successful response loop and append relevant posts to text view
                 for (Post p : posts) {
                     if (uid == p.getUserId()) {
                         String content = "";
@@ -67,18 +70,18 @@ public class LandingActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<List<Post>> call, Throwable t) {
-                textViewResult.setText(t.getMessage());
+                textViewResult.setText(t.getMessage()); //display error on failure
             }
         });
 
     }
 
     //intent switcher
-    public static Intent intentFactory(Context context, int i, String s) {
+    public static Intent intentFactory(Context context, int id, String username) {
         Intent intent = new Intent(context, LandingActivity.class);
         Bundle extras = new Bundle();
-        extras.putInt("EXTRA_UID", i); //for passing userId
-        extras.putString("EXTRA_UN", s); // for passing username
+        extras.putInt("EXTRA_UID", id); //for passing userId
+        extras.putString("EXTRA_UN", username); // for passing username
         intent.putExtras(extras);
         return intent;
     }
